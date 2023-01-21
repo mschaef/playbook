@@ -24,7 +24,7 @@
             [taoensso.timbre :as log]
             [taoensso.timbre.tools.logging :as tools]
             [taoensso.encore :as enc]
-            [taoensso.timbre.appenders.3rd-party.rolling :as rolling]))
+            [taoensso.timbre.appenders.community.rolling :as rolling]))
 
 (defn- log-output-fn [ data ]
   (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_
