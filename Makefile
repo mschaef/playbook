@@ -10,7 +10,7 @@ install:
 clean:
 	lein clean
 
-.PHONY: package
-package:
+.PHONY: deploy
+deploy:
 	lein clean
 	lein release patch

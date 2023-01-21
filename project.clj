@@ -21,7 +21,7 @@
 ;;
 ;; You must not remove this notice, or any other, from this software.
 
-(defproject playbook "0.0.1-SNAPSHOT"
+(defproject com.mschaef/playbook "0.0.1-SNAPSHOT"
   :description "A standard set of tools for small-scale Clojure applications."
 
   :license {:name "The Apache Software License, Version 2.0"
@@ -44,7 +44,7 @@
                   ["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
                   ["vcs" "tag" "--no-sign"]
-                  ["install"]
+                  ["deploy"]
                   ["change" "version" "leiningen.release/bump-version"]
                   ["vcs" "commit"]
                   ["vcs" "push"]])
