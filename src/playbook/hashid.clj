@@ -23,7 +23,7 @@
   (:require [hashids.core :as hashids]))
 
 (def default-opts
-  {:salt "8BC8A402-94AD-4824-8B7F-336CEC71E512"
+  {:salt ""
    :min-length 8})
 
 (defn- typed-opts [ opts type ]
