@@ -42,8 +42,8 @@
                 development-mode
                 log-default-level
                 log-levels]} config
-        log-path (and development-mode log-path)
-        log-levels (conj (or [] log-levels)
+        log-path (and (not development-mode) log-path)
+        log-levels (conj (or log-levels [])
                          [#{"*"} (cond
                                    log-default-level log-default-level
                                    development-mode :info

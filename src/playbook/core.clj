@@ -114,7 +114,7 @@
                     (Thread. (fn []
                                (shutdown-fn)))))
 
-(defn call-with-exception-barrier
+(defn exception-barrier
   ([ fn label ]
    #(try
       (fn)
@@ -122,7 +122,7 @@
         (log/error ex (str "Uncaught exception: " label))))))
 
 (defmacro with-exception-barrier [ label & body ]
-  `((call-with-exception-barrier ~label (fn [] ~@body))))
+  `((exception-barrier (fn [] ~@body) ~label)))
 
 (defmacro with-daemon-thread [ label & body ]
   `(future
