@@ -37,16 +37,26 @@
      (when-let [err ?err]
        (str enc/system-newline (log/stacktrace err {:stacktrace-fonts {}}))))))
 
-(defn setup-logging [ config log-levels ]
-  (log/info "Starting logging in: " (:log-path config) ", log levels: " log-levels)
-  (let [{:keys [development-mode]} config]
+(defn setup-logging [ config ]
+  (let [{:keys [log-path
+                development-mode
+                log-default-level
+                log-levels]} config
+        log-path (and development-mode log-path)
+        log-levels (conj (or [] log-levels)
+                         [#{"*"} (cond
+                                   log-default-level log-default-level
+                                   development-mode :info
+                                   :else :warn)])]
+    (log/report "Logging to " (or log-path "standard output") ", levels: " log-levels ".")
     (tools/use-timbre)
-    (log/merge-config! {:min-level (conj log-levels
-                                         [#{"*"} (if development-mode :info :warn)])
+    (log/merge-config! {:min-level log-levels
                         :output-fn log-output-fn
-                        :appenders {:println {:enabled? development-mode}
-                                    :log-file (assoc
-                                               (rolling/rolling-appender
-                                                {:path (:log-path config)
-                                                 :pattern :daily})
-                                               :enabled? (not development-mode))}})))
+                        :appenders {:println
+                                    {:enabled? (not log-path)}
+
+                                    :log-file
+                                    (assoc
+                                     (rolling/rolling-appender
+                                      {:path log-path :pattern :daily})
+                                     :enabled? log-path)}})))
