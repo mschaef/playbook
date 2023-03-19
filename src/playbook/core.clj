@@ -114,12 +114,20 @@
                     (Thread. (fn []
                                (shutdown-fn)))))
 
-(defn exception-barrier
+(defn call-with-exception-barrier
   ([ fn label ]
    #(try
       (fn)
       (catch Exception ex
         (log/error ex (str "Uncaught exception: " label))))))
+
+(defmacro with-exception-barrier [ label & body ]
+  `((call-with-exception-barrier ~label (fn [] ~@body))))
+
+(defmacro with-daemon-thread [ label & body ]
+  `(future
+     (with-exception-barrier ~label
+       ~@body)))
 
 ;;; Date utilities
 
