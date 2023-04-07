@@ -25,13 +25,21 @@
   (:require [taoensso.timbre :as log]
             [clojure.data.json :as json]))
 
+;;; Control Flow
+
 (defmacro unless [ condition & body ]
   `(when (not ~condition)
      ~@body))
 
-(defn string-empty? [ str ]
-  (or (nil? str)
-      (= 0 (count (.trim str)))))
+(defmacro aand [ & forms ]
+  (case (count forms)
+    0 true
+    1 (first forms)
+    `(if-let [ ~'it ~(first forms ) ]
+       (aand ~@(rest forms))
+       false)))
+
+;;; Data structure tools
 
 (defn in?
   "true if seq contains elm"
@@ -43,6 +51,21 @@
     (assoc map k v)
     map))
 
+(defn map-values [f m]
+  (->> (map (fn [[k v]] [k (f v)]) m)
+       (into {})))
+
+;;; String Tools
+
+(defn string-empty? [ str ]
+  (or (nil? str)
+      (= 0 (count (.trim str)))))
+
+(defn partition-string [ string n ]
+  "Partition a full string into segments of length n, returning a
+  sequence of strings of at most that length."
+  (map (partial apply str) (partition-all n string)))
+
 (defn string-leftmost
   ( [ string count ellipsis ]
       (let [length (.length string)
@@ -53,34 +76,58 @@
   ( [ string count ]
       (string-leftmost string count "")))
 
+;;; String Parsing
+
+(defn parsable-string? [ maybe-string ]
+  "Returns the parsable text content of the string and false
+  if there is no such content."
+  (and
+   (string? maybe-string)
+   (let [ string (.trim maybe-string) ]
+     (and (> (count string) 0)
+          string))))
+
 (defn try-parse-integer
   ([ str default-value ]
-   (try
-     (Integer/parseInt str)
-     (catch Exception ex
-       default-value)))
+   (aand (parsable-string? str)
+         (try
+           (Integer/parseInt it)
+           (catch Exception ex
+             default-value))))
   ([ str ]
     (try-parse-integer str false)))
 
 (defn try-parse-long
   ([ str default-value ]
-   (try
-     (Long/parseLong str)
-     (catch Exception ex
-       default-value)))
+   (aand (parsable-string? str)
+         (try
+           (Long/parseLong it)
+           (catch Exception ex
+             default-value))))
   ([ str ]
     (try-parse-long str false)))
 
 (defn try-parse-double
   ([ str default-value ]
-   (try
-     (Double/parseDouble str)
-     (catch Exception ex
-       default-value)))
+   (aand (parsable-string? str)
+         (try
+           (Double/parseDouble it)
+           (catch Exception ex
+             default-value))))
   ([ str ]
    (try-parse-double str false)))
 
-(defn safe-json-read-str [ json-string ]
+(defn uri-path? [ uri ]
+  "Returns only the path of the URI, if it is a parsable URI and false
+  otherwise."
+  (aand (parsable-string? uri)
+        (try
+          (.getPath (java.net.URI. it))
+          (catch java.net.URISyntaxException ex
+            (log/error "Invalid URI" uri)
+            false))))
+
+(defn try-parse-json [ json-string ]
   (try
     (json/read-str json-string)
     (catch Exception ex
@@ -94,10 +141,7 @@
                     str)]
          (try-parse-double str))))
 
-(defn ensure-number [ val ]
-  (if (number? val)
-    val
-    (try-parse-double val)))
+;;; Configuration Tools
 
 (defn config-property
   ( [ name ] (config-property name nil))
@@ -108,6 +152,39 @@
           (if-let [ int (try-parse-integer prop-binding) ]
             int
             prop-binding)))))
+
+;;; Date utilities
+
+(defn current-time []
+  (java.util.Date.))
+
+(defn add-days [ date days ]
+  "Given a date, advance it forward n days, leaving it at the
+  beginning of that day"
+  (let [c (java.util.Calendar/getInstance)]
+    (.setTime c date)
+    (.add c java.util.Calendar/DATE days)
+    (.set c java.util.Calendar/HOUR_OF_DAY 0)
+    (.set c java.util.Calendar/MINUTE 0)
+    (.set c java.util.Calendar/SECOND 0)
+    (.set c java.util.Calendar/MILLISECOND 0)
+    (.getTime c)))
+
+
+;;; Thread naming and process lifecycle
+
+(defn call-with-thread-name [ fn name ]
+  (let [thread (Thread/currentThread)
+        initial-thread-name (.getName thread)]
+    (try
+      (.setName thread name)
+      (fn)
+      (finally
+        (.setName thread initial-thread-name)))))
+
+(defmacro with-thread-name [ thread-name & body ]
+  `(call-with-thread-name (fn [] ~@body) ~thread-name))
+
 
 (defn add-shutdown-hook [ shutdown-fn ]
   (.addShutdownHook (Runtime/getRuntime)
@@ -129,19 +206,20 @@
      (with-exception-barrier ~label
        ~@body)))
 
-;;; Date utilities
 
-(defn current-time []
-  (java.util.Date.))
+;;;
 
-(defn add-days [ date days ]
-  "Given a date, advance it forward n days, leaving it at the
-  beginning of that day"
-  (let [c (java.util.Calendar/getInstance)]
-    (.setTime c date)
-    (.add c java.util.Calendar/DATE days)
-    (.set c java.util.Calendar/HOUR_OF_DAY 0)
-    (.set c java.util.Calendar/MINUTE 0)
-    (.set c java.util.Calendar/SECOND 0)
-    (.set c java.util.Calendar/MILLISECOND 0)
-    (.getTime c)))
+(defn parsable-string? [ maybe-string ]
+  "Returns the parsable text content of the input paramater and false
+  if there is no such content."
+  (and
+   (string? maybe-string)
+   (let [ string (.trim maybe-string) ]
+     (and (> (count string) 0)
+          string))))
+
+(defn parsable-integer? [ maybe-string ]
+  "Returns the parsable integer value of the input parameter and false
+  if there is no such integer value."
+  (if-let [ string (parsable-string? maybe-string) ]
+    (try-parse-integer string)
