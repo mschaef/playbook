@@ -131,15 +131,15 @@
             false))))
 
 (defn try-parse-json
-  ([ str default-value ]
+  ([ json-string default-value ]
    (try
-     (json/read-str str :key-fn keyword)
+     (json/read-str json-string :key-fn keyword)
      (catch Exception ex
        (log/warn "Bad JSON:" (.getMessage ex) json-string)
        default-value)))
 
-  ([ str ]
-   (try-parse-json str false)))
+  ([ json-string ]
+   (try-parse-json json-string false)))
 
 (defn try-parse-percentage [ str ]
   (and (string? str)
