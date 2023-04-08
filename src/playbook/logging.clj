@@ -48,7 +48,8 @@
                                    log-default-level log-default-level
                                    development-mode :info
                                    :else :warn)])]
-    (log/report "Logging to " (or log-path "standard output") ", levels: " log-levels ".")
+    (log/report "Logging to " (or log-path "standard output")
+                ", levels: " log-levels ".")
     (tools/use-timbre)
     (log/merge-config! {:min-level log-levels
                         :output-fn log-output-fn

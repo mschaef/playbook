@@ -33,7 +33,9 @@
                  [com.fzakaria/slf4j-timbre "0.3.21"]
                  [cprop "0.1.19"]
                  [org.clojure/data.json "2.4.0"]
-                 [jstrutz/hashids "1.0.1"]]
+                 [jstrutz/hashids "1.0.1"]
+                 [compojure "1.7.0"
+                  :exclusions [commons-codec]]]
 
   :scm {:name "git"
         :url "https://github.com/mschaef/playbook.git"}
