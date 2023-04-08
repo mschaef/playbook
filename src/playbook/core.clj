@@ -55,6 +55,9 @@
   (->> (map (fn [[k v]] [k (f v)]) m)
        (into {})))
 
+(defn drop-nth [n coll]
+  (keep-indexed #(if (not= %1 n) %2) coll))
+
 ;;; String Tools
 
 (defn string-empty? [ str ]
@@ -127,12 +130,16 @@
             (log/error "Invalid URI" uri)
             false))))
 
-(defn try-parse-json [ json-string ]
-  (try
-    (json/read-str json-string)
-    (catch Exception ex
-      (log/warn "Bad JSON:" (.getMessage ex) json-string)
-      false)))
+(defn try-parse-json
+  ([ str default-value ]
+   (try
+     (json/read-str str :key-fn keyword)
+     (catch Exception ex
+       (log/warn "Bad JSON:" (.getMessage ex) json-string)
+       default-value)))
+
+  ([ str ]
+   (try-parse-json str false)))
 
 (defn try-parse-percentage [ str ]
   (and (string? str)
