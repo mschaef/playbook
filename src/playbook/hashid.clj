@@ -34,7 +34,7 @@
    (encode default-opts type id))
 
   ([ opts type id ]
-   (str (name type) "-" (hashids/encode (typed-opts (merge default-opts opts) type) id))))
+   (str (name type) (hashids/encode (typed-opts (merge default-opts opts) type) id))))
 
 (defn decode
   ([ type hid ]
@@ -42,9 +42,9 @@
 
   ([ opts type hid ]
    (let [typename (name type)]
-     (and (.startsWith hid (str typename "-"))
+     (and (.startsWith hid typename)
           (let [decoded (hashids/decode (typed-opts (merge default-opts opts) type)
-                                        (.substring hid (+ 1 (count typename))))]
+                                        (.substring hid (count typename)))]
             (and (= 1 (count decoded))
                  (first decoded)))))))
 

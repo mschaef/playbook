@@ -34,8 +34,8 @@
 
 (deftest hashid-prefixes
   (testing "Hash ID's have their typename as a prefix."
-    (is (.startsWith (encode :typea 1) "typea-"))
-    (is (.startsWith (encode :typeb 1) "typeb-"))))
+    (is (.startsWith (encode :typea 1) "typea"))
+    (is (.startsWith (encode :typeb 1) "typeb"))))
 
 (deftest hashid-decode
   (testing "A number can be encoded and successfully decoded back to its original value."
