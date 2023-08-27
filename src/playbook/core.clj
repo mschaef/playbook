@@ -58,6 +58,21 @@
 (defn drop-nth [n coll]
   (keep-indexed #(if (not= %1 n) %2) coll))
 
+(defn vmap [f coll]
+  (into {} (for [[k v] coll] [k (f v)])))
+
+(defn to-map [ key-fn values ]
+  (into {} (map (fn [ value ]
+                  [(key-fn value) value])
+                values )))
+
+(defn to-map-with-keys [ keys-fn values ]
+  (into {} (mapcat (fn [ value ]
+                     (map (fn [ key ]
+                            [key value])
+                          (keys-fn value)))
+                   values)))
+
 ;;; String Tools
 
 (defn string-empty? [ str ]
@@ -148,6 +163,17 @@
                     str)]
          (try-parse-double str))))
 
+(def truthy-strings #{"yes" "true" "1" "y" "t" "on"})
+
+(defn try-parse-boolean
+  ([ str ]
+   (try-parse-boolean str nil))
+  ([ str default-value ]
+   (if (string? str)
+     (boolean
+      (truthy-strings (.trim str)))
+     default-value)))
+
 ;;; Configuration Tools
 
 (defn config-property
@@ -213,3 +239,11 @@
      (with-exception-barrier ~label
        ~@body)))
 
+;;; I/O
+
+(defn binary-slurp
+  [^java.io.File file]
+  (let [result (byte-array (.length file))]
+    (with-open [in (java.io.DataInputStream. (clojure.java.io/input-stream file))]
+      (.readFully in result))
+    result))
