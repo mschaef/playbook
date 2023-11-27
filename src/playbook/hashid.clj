@@ -34,7 +34,8 @@
    (encode default-opts type id))
 
   ([ opts type id ]
-   (str (name type) (hashids/encode (typed-opts (merge default-opts opts) type) id))))
+   (str (name type)
+        (hashids/encode (typed-opts (merge default-opts opts) type) id))))
 
 (defn decode
   ([ type hid ]
@@ -47,6 +48,3 @@
                                         (.substring hid (count typename)))]
             (and (= 1 (count decoded))
                  (first decoded)))))))
-
-
-
