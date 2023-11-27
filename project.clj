@@ -29,8 +29,8 @@
 
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
-                 [com.taoensso/timbre "6.0.4"]
-                 [com.fzakaria/slf4j-timbre "0.3.21"]
+                 [com.taoensso/timbre "6.3.1"]
+                 [com.fzakaria/slf4j-timbre "0.4.1"]
                  [cprop "0.1.19"]
                  [org.clojure/data.json "2.4.0"]
                  [jstrutz/hashids "1.0.1"]
