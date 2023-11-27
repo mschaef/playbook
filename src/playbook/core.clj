@@ -189,20 +189,14 @@
 ;;; Date utilities
 
 (defn current-time []
-  (java.util.Date.))
+  (java.time.LocalDateTime/now))
 
 (defn add-days [ date days ]
   "Given a date, advance it forward n days, leaving it at the
   beginning of that day"
-  (let [c (java.util.Calendar/getInstance)]
-    (.setTime c date)
-    (.add c java.util.Calendar/DATE days)
-    (.set c java.util.Calendar/HOUR_OF_DAY 0)
-    (.set c java.util.Calendar/MINUTE 0)
-    (.set c java.util.Calendar/SECOND 0)
-    (.set c java.util.Calendar/MILLISECOND 0)
-    (.getTime c)))
-
+  (-> date
+      (.plusDays 1)
+      (.truncatedTo java.time.temporal.ChronoUnit/DAYS)))
 
 ;;; Thread naming and process lifecycle
 
