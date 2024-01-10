@@ -22,8 +22,10 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns playbook.core
-  (:require [taoensso.timbre :as log]
-            [clojure.data.json :as json]))
+  (:require [clojure.data.json :as json]
+            [clojure.edn :as edn]
+            [clojure.pprint :as pprint]
+            [taoensso.timbre :as log]))
 
 ;;; Control Flow
 
@@ -49,6 +51,7 @@
 (defn assoc-if [ map assoc? k v ]
   (if assoc?
     (assoc map k v)
+
     map))
 
 (defn map-values [f m]
@@ -72,6 +75,11 @@
                             [key value])
                           (keys-fn value)))
                    values)))
+
+(defn deep-merge [a & maps]
+  (if (map? a)
+    (apply merge-with deep-merge a maps)
+    (apply merge-with deep-merge maps)))
 
 ;;; String Tools
 
@@ -135,16 +143,6 @@
   ([ str ]
    (try-parse-double str false)))
 
-(defn uri-path? [ uri ]
-  "Returns only the path of the URI, if it is a parsable URI and false
-  otherwise."
-  (aand (parsable-string? uri)
-        (try
-          (.getPath (java.net.URI. it))
-          (catch java.net.URISyntaxException ex
-            (log/error "Invalid URI" uri)
-            false))))
-
 (defn try-parse-json
   ([ json-string default-value ]
    (try
@@ -173,6 +171,18 @@
      (boolean
       (truthy-strings (.trim str)))
      default-value)))
+
+;;; URI Parsing
+
+(defn uri-path? [ uri ]
+  "Returns only the path of the URI, if it is a parsable URI and false
+  otherwise."
+  (aand (parsable-string? uri)
+        (try
+          (.getPath (java.net.URI. it))
+          (catch java.net.URISyntaxException ex
+            (log/error "Invalid URI" uri)
+            false))))
 
 ;;; Configuration Tools
 
@@ -247,3 +257,11 @@
     (with-open [in (java.io.DataInputStream. (clojure.java.io/input-stream file))]
       (.readFully in result))
     result))
+
+(defn edn-spit [filename collection]
+  (spit (java.io.File. filename)
+        (with-out-str
+          (pprint/write collection :dispatch pprint/code-dispatch))))
+
+(defn edn-slurp [ filename ]
+  (edn/read-string (slurp filename)))
