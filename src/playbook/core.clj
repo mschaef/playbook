@@ -253,4 +253,3 @@
 
 (defn edn-slurp [ filename ]
   (edn/read-string (slurp filename)))
-

@@ -66,3 +66,9 @@
   (when (not *config*)
     (throw (RuntimeException. "No configuration loaded.")))
   (get-in *config* keys))
+
+(defn wrap-config [ app ]
+  (let [ config *config* ]
+    (fn [ req ]
+      (with-config config
+        (app req)))))
