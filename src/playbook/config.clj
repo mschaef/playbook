@@ -36,10 +36,17 @@
     {}))
 
 (defn load-config [ ]
-  (let [config (cprop/load-config :merge [(cprop-source/from-resource "config.edn")
-                                          (maybe-config-file "conf")
-                                          (maybe-config-file "creds")])]
-    (log/info "Starting App" (:app config))
-    (when (:development-mode config)
-      (log/warn "=== DEVELOPMENT MODE ==="))
-    config))
+  (cprop/load-config :merge [(cprop-source/from-resource "config.edn")
+                             (maybe-config-file "conf")
+                             (maybe-config-file "creds")]))
+
+(def ^:dynamic *config* nil)
+
+(defmacro with-config [ new-config & body ]
+  `(binding [ *config* ~new-config]
+     ~@body))
+
+(defn cval [ & keys ]
+  (when (not *config*)
+    (throw (RuntimeException. "No configuration loaded.")))
+  (get-in *config* keys))

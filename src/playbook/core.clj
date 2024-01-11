@@ -25,7 +25,9 @@
   (:require [clojure.data.json :as json]
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [playbook.config :as config]
+            [playbook.logging :as logging]))
 
 ;;; Control Flow
 
@@ -265,3 +267,20 @@
 
 (defn edn-slurp [ filename ]
   (edn/read-string (slurp filename)))
+
+;;; Main
+
+(defn app-entry
+  ([ entry ]
+   (config/with-config (config/load-config)
+     (logging/setup-logging)
+     (log/info "Starting App" (config/cval :app))
+     (when (config/cval :development-mode)
+       (log/warn "=== DEVELOPMENT MODE ==="))
+     (with-exception-barrier :app-entry
+       (entry))
+     (log/info "end run."))))
+
+(defmacro defmain [ arglist & body ]
+  `(defn ~'-main ~arglist
+     (app-entry (fn [ ] ~@body))))
