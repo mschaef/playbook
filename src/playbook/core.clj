@@ -25,9 +25,7 @@
   (:require [clojure.data.json :as json]
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]
-            [taoensso.timbre :as log]
-            [playbook.config :as config]
-            [playbook.logging :as logging]))
+            [taoensso.timbre :as log]))
 
 ;;; Control Flow
 
@@ -186,18 +184,6 @@
             (log/error "Invalid URI" uri)
             false))))
 
-;;; Configuration Tools
-
-(defn config-property
-  ( [ name ] (config-property name nil))
-  ( [ name default ]
-      (let [prop-binding (System/getProperty name)]
-        (if (nil? prop-binding)
-          default
-          (if-let [ int (try-parse-integer prop-binding) ]
-            int
-            prop-binding)))))
-
 ;;; Date utilities
 
 (defn current-time []
@@ -268,19 +254,3 @@
 (defn edn-slurp [ filename ]
   (edn/read-string (slurp filename)))
 
-;;; Main
-
-(defn app-entry
-  ([ entry ]
-   (config/with-config (config/load-config)
-     (logging/setup-logging)
-     (log/info "Starting App" (config/cval :app))
-     (when (config/cval :development-mode)
-       (log/warn "=== DEVELOPMENT MODE ==="))
-     (with-exception-barrier :app-entry
-       (entry))
-     (log/info "end run."))))
-
-(defmacro defmain [ arglist & body ]
-  `(defn ~'-main ~arglist
-     (app-entry (fn [ ] ~@body))))

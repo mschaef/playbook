@@ -22,10 +22,26 @@
 (ns playbook.config
   (:require [taoensso.timbre :as log]
             [cprop.core :as cprop]
-            [cprop.source :as cprop-source]))
+            [cprop.source :as cprop-source]
+            [playbook.core :as core]))
+
+;;; Configuration Tools
+
+(defn property
+  ( [ name ]
+   (property name nil))
+
+  ( [ name default ]
+      (let [prop-binding (System/getProperty name)]
+        (if (nil? prop-binding)
+          default
+          (if-let [ int (core/try-parse-integer prop-binding) ]
+            int
+            prop-binding)))))
+
 
 (defn- maybe-config-file [ prop-name ]
-  (if-let [prop (System/getProperty prop-name)]
+  (if-let [prop (property prop-name)]
     (if (.exists (java.io.File. prop))
       (do
         (log/info (str "Config file found: " prop " (specified by property: " prop-name ")"))
