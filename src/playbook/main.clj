@@ -26,14 +26,14 @@
             [playbook.logging :as logging]))
 
 (defn app-entry
-  ([ entry ]
+  ([ entry-fn ]
    (config/with-config (config/load-config)
      (logging/setup-logging)
      (log/info "Starting App" (config/cval :app))
      (when (config/cval :development-mode)
        (log/warn "=== DEVELOPMENT MODE ==="))
      (core/with-exception-barrier :app-entry
-       (entry))
+       (entry-fn))
      (log/info "end run."))))
 
 (defmacro defmain [ arglist & body ]
