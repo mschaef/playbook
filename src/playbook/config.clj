@@ -20,6 +20,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns playbook.config
+  (:use playbook.core)
   (:require [taoensso.timbre :as log]
             [cprop.core :as cprop]
             [cprop.source :as cprop-source]
@@ -72,3 +73,7 @@
     (fn [ req ]
       (with-config config
         (app req)))))
+
+(defmacro with-extended-config [ additional-config & body ]
+  `(with-config (deep-merge (cval) ~additional-config)
+     ~@body))

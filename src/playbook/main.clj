@@ -27,9 +27,10 @@
 
 (defn app-entry
   ([ entry-fn ]
+   (println "Loading Configuration...")
    (config/with-config (config/load-config)
      (logging/setup-logging)
-     (log/info "Starting App" (config/cval :app))
+     (log/report "Starting App" (config/cval :app))
      (when (config/cval :development-mode)
        (log/warn "=== DEVELOPMENT MODE ==="))
      (core/with-exception-barrier :app-entry
