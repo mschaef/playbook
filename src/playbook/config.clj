@@ -77,3 +77,8 @@
 (defmacro with-extended-config [ additional-config & body ]
   `(with-config (deep-merge (cval) ~additional-config)
      ~@body))
+
+(defn wrap-with-current-config [ f ]
+  (let [ config (cval) ]
+    #(with-config config
+       (f))))

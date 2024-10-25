@@ -35,7 +35,8 @@
                  [org.clojure/data.json "2.4.0"]
                  [jstrutz/hashids "1.0.1"]
                  [compojure "1.7.0"
-                  :exclusions [commons-codec]]]
+                  :exclusions [commons-codec]]
+                 [it.sauronsoftware.cron4j/cron4j "2.2.5"]]
 
   :scm {:name "git"
         :url "https://github.com/mschaef/playbook.git"}
