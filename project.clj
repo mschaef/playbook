@@ -21,7 +21,7 @@
 ;;
 ;; You must not remove this notice, or any other, from this software.
 
-(defproject com.mschaef/playbook "0.1.4-SNAPSHOT"
+(defproject com.mschaef/playbook "0.1.4"
   :description "A standard set of tools for small-scale Clojure applications."
 
   :license {:name "The Apache Software License, Version 2.0"
