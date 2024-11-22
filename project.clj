@@ -29,7 +29,7 @@
 
   :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.logging "1.3.0"]
-                 [com.taoensso/timbre "6.5.0"]
+                 [com.taoensso/timbre "6.6.1"]
                  [com.fzakaria/slf4j-timbre "0.4.1"]
                  [cprop "0.1.20"]
                  [org.clojure/data.json "2.5.0"]
@@ -41,14 +41,4 @@
   :scm {:name "git"
         :url "https://github.com/mschaef/playbook.git"}
 
-  :deploy-repositories [["releases" {:url "https://repo.clojars.org"
-                                     :sign-releases false}]]
-
-  :release-tasks [["vcs" "assert-committed"]
-                  ["change" "version" "leiningen.release/bump-version" "release"]
-                  ["vcs" "commit"]
-                  ["vcs" "tag" "--no-sign"]
-                  ["deploy"]
-                  ["change" "version" "leiningen.release/bump-version"]
-                  ["vcs" "commit"]
-                  ["vcs" "push"]])
+  :deploy-repositories [["releases" {:url "https://repo.clojars.org"}]])
