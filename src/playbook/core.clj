@@ -201,6 +201,16 @@
     (.set c java.util.Calendar/MILLISECOND 0)
     (.getTime c)))
 
+(defn add-hours [ date hours ]
+  "Given a date, advance it forward n hours, leaving it at the
+  beginning of that hour"
+  (let [c (java.util.Calendar/getInstance)]
+    (.setTime c date)
+    (.add c java.util.Calendar/HOUR_OF_DAY hours)
+    (.set c java.util.Calendar/MINUTE 0)
+    (.set c java.util.Calendar/SECOND 0)
+    (.set c java.util.Calendar/MILLISECOND 0)
+    (.getTime c)))
 
 ;;; Thread naming and process lifecycle
 
