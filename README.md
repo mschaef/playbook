@@ -20,7 +20,7 @@ I've taken [packaging small Clojure apps](https://www.mschaef.com/packaging_smal
 
 ## License
 
-Copyright © 2015-2023 [Michael Schaeffer](http://www.mschaef.com/)
+Copyright © 2015-2025 [Michael Schaeffer](http://www.mschaef.com/)
 
 All Rights Reserved.
 
