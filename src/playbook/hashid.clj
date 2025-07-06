@@ -34,17 +34,27 @@
    (encode default-opts type id))
 
   ([opts type id]
-   (str (name type)
-        (hashids/encode (typed-opts (merge default-opts opts) type) id))))
+   (hashids/encode (typed-opts (merge default-opts opts) type) id)))
+
+(defn- decode-first [opts hid]
+  (let [decoded (hashids/decode opts hid)]
+    (and (= 1 (count decoded))
+         (first decoded))))
 
 (defn decode
   ([type hid]
    (decode default-opts type hid))
 
   ([opts type hid]
-   (let [typename (name type)]
-     (and (.startsWith hid typename)
-          (let [decoded (hashids/decode (typed-opts (merge default-opts opts) type)
-                                        (.substring hid (count typename)))]
-            (and (= 1 (count decoded))
-                 (first decoded)))))))
+   (let [typename (name type)
+         opts (typed-opts (merge default-opts opts) type)]
+     (or
+      (decode-first opts hid)
+      ;; Some older hash ID's are prefixed with their
+      ;; type-id. This catches those. The core hashid library
+      ;; verifies the decode of a hash, meaning this should not
+      ;; run into issues where a type prefix matches the first
+      ;; few digits of a legimate hash. The possibility of the
+      ;; result being a legitimately valid hashid is very low.
+      (and (.startsWith hid typename)
+           (decode-first opts (.substring hid (count typename))))))))

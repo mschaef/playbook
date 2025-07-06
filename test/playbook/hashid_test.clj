@@ -32,11 +32,6 @@
     (is (not= (.substring (encode :typea 1) 6)
               (.substring (encode :typeb 1) 6)))))
 
-(deftest hashid-prefixes
-  (testing "Hash ID's have their typename as a prefix."
-    (is (.startsWith (encode :typea 1) "typea"))
-    (is (.startsWith (encode :typeb 1) "typeb"))))
-
 (deftest hashid-decode
   (testing "A number can be encoded and successfully decoded back to its original value."
     (is (= (decode :typea (encode :typea 42))
@@ -44,4 +39,13 @@
 
   (testing "A hash ID cannot be decoded if the type does not match."
     (is (= (decode :badtype (encode :typea 42))
+           false))))
+
+(deftest hashid-decode-with-prefix
+  (testing "A number can be encoded and successfully decoded back to its original value."
+    (is (= (decode :typea (str "typea" (encode :typea 42)))
+           42)))
+
+  (testing "A hash ID cannot be decoded if the type does not match."
+    (is (= (decode :badtype (str "typea" (encode :typea 42)))
            false))))
