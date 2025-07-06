@@ -26,22 +26,22 @@
   {:salt ""
    :min-length 8})
 
-(defn- typed-opts [ opts type ]
+(defn- typed-opts [opts type]
   (assoc opts :salt (str (name type) (:salt opts))))
 
 (defn encode
-  ([ type id ]
+  ([type id]
    (encode default-opts type id))
 
-  ([ opts type id ]
+  ([opts type id]
    (str (name type)
         (hashids/encode (typed-opts (merge default-opts opts) type) id))))
 
 (defn decode
-  ([ type hid ]
-   (decode default-opts type hid ))
+  ([type hid]
+   (decode default-opts type hid))
 
-  ([ opts type hid ]
+  ([opts type hid]
    (let [typename (name type)]
      (and (.startsWith hid typename)
           (let [decoded (hashids/decode (typed-opts (merge default-opts opts) type)

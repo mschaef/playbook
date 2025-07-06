@@ -27,7 +27,7 @@
             [taoensso.timbre.appenders.community.rolling :as rolling]
             [playbook.config :as config]))
 
-(defn- log-output-fn [ data ]
+(defn- log-output-fn [data]
   (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_
                 timestamp_ ?line]} data]
     (str
@@ -38,7 +38,7 @@
      (when-let [err ?err]
        (str enc/system-newline (log/stacktrace err {:stacktrace-fonts {}}))))))
 
-(defn setup-logging [ ]
+(defn setup-logging []
   (let [{:keys [log-path
                 development-mode
                 log-default-level

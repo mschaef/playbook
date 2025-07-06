@@ -26,7 +26,7 @@
             [playbook.logging :as logging]))
 
 (defn app-entry
-  ([ entry-fn ]
+  ([entry-fn]
    (println "Loading Configuration...")
    (config/with-config (config/load-config)
      (logging/setup-logging)
@@ -37,6 +37,6 @@
        (entry-fn))
      (log/info "end run."))))
 
-(defmacro defmain [ arglist & body ]
+(defmacro defmain [arglist & body]
   `(defn ~'-main ~arglist
-     (app-entry (fn [ ] ~@body))))
+     (app-entry (fn [] ~@body))))

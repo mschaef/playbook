@@ -38,6 +38,10 @@
                   :exclusions [commons-codec]]
                  [it.sauronsoftware.cron4j/cron4j "2.2.5"]]
 
+  :cljfmt {:load-config-file? true}
+
+  :plugins [[dev.weavejester/lein-cljfmt "0.13.0"]]
+
   :scm {:name "git"
         :url "https://github.com/mschaef/playbook.git"}
 

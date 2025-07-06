@@ -29,19 +29,18 @@
 ;;; Configuration Tools
 
 (defn property
-  ( [ name ]
+  ([name]
    (property name nil))
 
-  ( [ name default ]
-      (let [prop-binding (System/getProperty name)]
-        (if (nil? prop-binding)
-          default
-          (if-let [ int (core/try-parse-integer prop-binding) ]
-            int
-            prop-binding)))))
+  ([name default]
+   (let [prop-binding (System/getProperty name)]
+     (if (nil? prop-binding)
+       default
+       (if-let [int (core/try-parse-integer prop-binding)]
+         int
+         prop-binding)))))
 
-
-(defn- maybe-config-file [ prop-name ]
+(defn- maybe-config-file [prop-name]
   (if-let [prop (property prop-name)]
     (if (.exists (java.io.File. prop))
       (do
@@ -52,33 +51,33 @@
         {}))
     {}))
 
-(defn load-config [ ]
+(defn load-config []
   (cprop/load-config :merge [(cprop-source/from-resource "config.edn")
                              (maybe-config-file "conf")
                              (maybe-config-file "creds")]))
 
 (def ^:dynamic *config* nil)
 
-(defmacro with-config [ new-config & body ]
-  `(binding [ *config* ~new-config]
+(defmacro with-config [new-config & body]
+  `(binding [*config* ~new-config]
      ~@body))
 
-(defn cval [ & keys ]
+(defn cval [& keys]
   (when (not *config*)
     (throw (RuntimeException. "No configuration loaded.")))
   (get-in *config* keys))
 
-(defn wrap-config [ app ]
-  (let [ config *config* ]
-    (fn [ req ]
+(defn wrap-config [app]
+  (let [config *config*]
+    (fn [req]
       (with-config config
         (app req)))))
 
-(defmacro with-extended-config [ additional-config & body ]
+(defmacro with-extended-config [additional-config & body]
   `(with-config (deep-merge (cval) ~additional-config)
      ~@body))
 
-(defn wrap-with-current-config [ f ]
-  (let [ config (cval) ]
+(defn wrap-with-current-config [f]
+  (let [config (cval)]
     #(with-config config
        (f))))

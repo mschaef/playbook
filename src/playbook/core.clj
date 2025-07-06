@@ -29,15 +29,15 @@
 
 ;;; Control Flow
 
-(defmacro unless [ condition & body ]
+(defmacro unless [condition & body]
   `(when (not ~condition)
      ~@body))
 
-(defmacro aand [ & forms ]
+(defmacro aand [& forms]
   (case (count forms)
     0 true
     1 (first forms)
-    `(if-let [ ~'it ~(first forms ) ]
+    `(if-let [~'it ~(first forms)]
        (aand ~@(rest forms))
        false)))
 
@@ -48,7 +48,7 @@
   [seq elm]
   (some #(= elm %) seq))
 
-(defn assoc-if [ map assoc? k v ]
+(defn assoc-if [map assoc? k v]
   (if assoc?
     (assoc map k v)
 
@@ -64,14 +64,14 @@
 (defn vmap [f coll]
   (into {} (for [[k v] coll] [k (f v)])))
 
-(defn to-map [ key-fn values ]
-  (into {} (map (fn [ value ]
+(defn to-map [key-fn values]
+  (into {} (map (fn [value]
                   [(key-fn value) value])
-                values )))
+                values)))
 
-(defn to-map-with-keys [ keys-fn values ]
-  (into {} (mapcat (fn [ value ]
-                     (map (fn [ key ]
+(defn to-map-with-keys [keys-fn values]
+  (into {} (mapcat (fn [value]
+                     (map (fn [key]
                             [key value])
                           (keys-fn value)))
                    values)))
@@ -83,90 +83,90 @@
 
 ;;; String Tools
 
-(defn string-empty? [ str ]
+(defn string-empty? [str]
   (or (nil? str)
       (= 0 (count (.trim str)))))
 
-(defn partition-string [ string n ]
+(defn partition-string [string n]
   "Partition a full string into segments of length n, returning a
   sequence of strings of at most that length."
   (map (partial apply str) (partition-all n string)))
 
 (defn string-leftmost
-  ( [ string count ellipsis ]
-      (let [length (.length string)
-            leftmost (min count length)]
-        (if (< leftmost length)
-          (str (.substring string 0 leftmost) ellipsis)
-          string)))
-  ( [ string count ]
-      (string-leftmost string count "")))
+  ([string count ellipsis]
+   (let [length (.length string)
+         leftmost (min count length)]
+     (if (< leftmost length)
+       (str (.substring string 0 leftmost) ellipsis)
+       string)))
+  ([string count]
+   (string-leftmost string count "")))
 
 ;;; String Parsing
 
-(defn parsable-string? [ maybe-string ]
+(defn parsable-string? [maybe-string]
   "Returns the parsable text content of the string and false
   if there is no such content."
   (and
    (string? maybe-string)
-   (let [ string (.trim maybe-string) ]
+   (let [string (.trim maybe-string)]
      (and (> (count string) 0)
           string))))
 
 (defn try-parse-integer
-  ([ str default-value ]
+  ([str default-value]
    (aand (parsable-string? str)
          (try
            (Integer/parseInt it)
            (catch Exception ex
              default-value))))
-  ([ str ]
-    (try-parse-integer str false)))
+  ([str]
+   (try-parse-integer str false)))
 
 (defn try-parse-long
-  ([ str default-value ]
+  ([str default-value]
    (aand (parsable-string? str)
          (try
            (Long/parseLong it)
            (catch Exception ex
              default-value))))
-  ([ str ]
-    (try-parse-long str false)))
+  ([str]
+   (try-parse-long str false)))
 
 (defn try-parse-double
-  ([ str default-value ]
+  ([str default-value]
    (aand (parsable-string? str)
          (try
            (Double/parseDouble it)
            (catch Exception ex
              default-value))))
-  ([ str ]
+  ([str]
    (try-parse-double str false)))
 
 (defn try-parse-json
-  ([ json-string default-value ]
+  ([json-string default-value]
    (try
      (json/read-str json-string :key-fn keyword)
      (catch Exception ex
        (log/warn "Bad JSON:" (.getMessage ex) json-string)
        default-value)))
 
-  ([ json-string ]
+  ([json-string]
    (try-parse-json json-string false)))
 
-(defn try-parse-percentage [ str ]
+(defn try-parse-percentage [str]
   (and (string? str)
-       (let [ str (if (= \% (.charAt str (- (.length str) 1)))
-                    (.substring str 0 (- (.length str) 1))
-                    str)]
+       (let [str (if (= \% (.charAt str (- (.length str) 1)))
+                   (.substring str 0 (- (.length str) 1))
+                   str)]
          (try-parse-double str))))
 
 (def truthy-strings #{"yes" "true" "1" "y" "t" "on"})
 
 (defn try-parse-boolean
-  ([ str ]
+  ([str]
    (try-parse-boolean str nil))
-  ([ str default-value ]
+  ([str default-value]
    (if (string? str)
      (boolean
       (truthy-strings (.trim str)))
@@ -174,7 +174,7 @@
 
 ;;; URI Parsing
 
-(defn uri-path? [ uri ]
+(defn uri-path? [uri]
   "Returns only the path of the URI, if it is a parsable URI and false
   otherwise."
   (aand (parsable-string? uri)
@@ -189,7 +189,7 @@
 (defn current-time []
   (java.util.Date.))
 
-(defn add-days [ date days ]
+(defn add-days [date days]
   "Given a date, advance it forward n days, leaving it at the
   beginning of that day"
   (let [c (java.util.Calendar/getInstance)]
@@ -201,7 +201,7 @@
     (.set c java.util.Calendar/MILLISECOND 0)
     (.getTime c)))
 
-(defn add-hours [ date hours ]
+(defn add-hours [date hours]
   "Given a date, advance it forward n hours, leaving it at the
   beginning of that hour"
   (let [c (java.util.Calendar/getInstance)]
@@ -214,7 +214,7 @@
 
 ;;; Thread naming and process lifecycle
 
-(defn call-with-thread-name [ fn name ]
+(defn call-with-thread-name [fn name]
   (let [thread (Thread/currentThread)
         initial-thread-name (.getName thread)]
     (try
@@ -223,26 +223,25 @@
       (finally
         (.setName thread initial-thread-name)))))
 
-(defmacro with-thread-name [ thread-name & body ]
+(defmacro with-thread-name [thread-name & body]
   `(call-with-thread-name (fn [] ~@body) ~thread-name))
 
-
-(defn add-shutdown-hook [ shutdown-fn ]
+(defn add-shutdown-hook [shutdown-fn]
   (.addShutdownHook (Runtime/getRuntime)
                     (Thread. (fn []
                                (shutdown-fn)))))
 
 (defn exception-barrier
-  ([ fn label ]
+  ([fn label]
    #(try
       (fn)
       (catch Exception ex
         (log/error ex (str "Uncaught exception: " label))))))
 
-(defmacro with-exception-barrier [ label & body ]
+(defmacro with-exception-barrier [label & body]
   `((exception-barrier (fn [] ~@body) ~label)))
 
-(defmacro with-daemon-thread [ label & body ]
+(defmacro with-daemon-thread [label & body]
   `(future
      (with-exception-barrier ~label
        ~@body)))
@@ -261,5 +260,5 @@
         (with-out-str
           (pprint/write collection :dispatch pprint/code-dispatch))))
 
-(defn edn-slurp [ filename ]
+(defn edn-slurp [filename]
   (edn/read-string (slurp filename)))
