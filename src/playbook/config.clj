@@ -62,10 +62,15 @@
   `(binding [*config* ~new-config]
      ~@body))
 
+(def missing-cval-marker (gensym "missing-cval-marker"))
+
 (defn cval [& keys]
   (when (not *config*)
-    (throw (RuntimeException. "No configuration loaded.")))
-  (get-in *config* keys))
+    (FAIL "No configuration loaded."))
+  (let [val (get-in *config* keys missing-cval-marker)]
+    (if (= val missing-cval-marker)
+      (FAIL "Cannot find configuration value at path: " keys)
+      val)))
 
 (defn wrap-config [app]
   (let [config *config*]
