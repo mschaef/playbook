@@ -23,6 +23,14 @@
   (:use playbook.core)
   (:require [clojure.test :refer :all]))
 
+(deftest fail-reports-exception
+  (is (thrown-with-msg? RuntimeException #"test 1 xyzzy"
+                        (FAIL "test " 1 " xyzzy")))
+
+  (is (thrown-with-msg? RuntimeException #"test 2 xyzzy"
+                        (FAIL (RuntimeException. "inner")
+                              "test " 2 " xyzzy"))))
+
 (deftest empty-string
   (testing "Empty string check"
     (is (= true (string-empty? "")))

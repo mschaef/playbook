@@ -27,6 +27,13 @@
             [clojure.pprint :as pprint]
             [taoensso.timbre :as log]))
 
+;;; Runtime Errors
+
+(defn FAIL [arg & rest]
+  (if (instance? Throwable arg)
+    (throw (RuntimeException. (apply str rest) arg))
+    (throw (RuntimeException. (apply str arg rest)))))
+
 ;;; Control Flow
 
 (defmacro unless [condition & body]
