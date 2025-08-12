@@ -168,8 +168,7 @@
    (try-parse-boolean str nil))
   ([str default-value]
    (if (string? str)
-     (boolean
-      (truthy-strings (.trim str)))
+     (boolean (truthy-strings (.toLowerCase (.trim str))))
      default-value)))
 
 ;;; URI Parsing
