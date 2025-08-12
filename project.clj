@@ -27,12 +27,12 @@
   :license {:name "The Apache Software License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
-  :dependencies [[org.clojure/clojure "1.12.0"]
+  :dependencies [[org.clojure/clojure "1.12.1"]
                  [org.clojure/tools.logging "1.3.0"]
-                 [com.taoensso/timbre "6.6.1"]
+                 [com.taoensso/timbre "6.7.1"]
                  [com.fzakaria/slf4j-timbre "0.4.1"]
                  [cprop "0.1.20"]
-                 [org.clojure/data.json "2.5.0"]
+                 [org.clojure/data.json "2.5.1"]
                  [jstrutz/hashids "1.0.1"]
                  [compojure "1.7.1"
                   :exclusions [commons-codec]]
