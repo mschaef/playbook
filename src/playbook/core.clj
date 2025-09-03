@@ -268,3 +268,14 @@
 
 (defn edn-slurp [filename]
   (edn/read-string (slurp filename)))
+
+;;; URL Encoding
+
+(defn encode-url [url query-params]
+  (let [query-string (clojure.string/join
+                      "&" (map (fn [[param val]]
+                                 (str (name param) "=" (java.net.URLEncoder/encode (str val))))
+                               query-params))]
+    (if (> (.length query-string) 0)
+      (str url "?" query-string)
+      url)))
