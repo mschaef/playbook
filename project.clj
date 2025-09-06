@@ -34,8 +34,6 @@
                  [cprop "0.1.20"]
                  [org.clojure/data.json "2.5.1"]
                  [jstrutz/hashids "1.0.1"]
-                 [compojure "1.7.1"
-                  :exclusions [commons-codec]]
                  [it.sauronsoftware.cron4j/cron4j "2.2.5"]]
 
   :cljfmt {:load-config-file? true}
