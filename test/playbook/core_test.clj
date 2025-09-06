@@ -73,3 +73,24 @@
   (testing "Non-string values return fhe default value"
     (is (nil? (try-parse-boolean nil)))
     (is (= :default (try-parse-boolean 0 :default)))))
+
+(deftest url-encoding
+  (is (= "http://arlonet.com:8080/foo"
+         (encode-url "http://arlonet.com:8080/foo"
+                     {})))
+
+  (is (= "http://arlonet.com:8080/foo?x=3"
+         (encode-url "http://arlonet.com:8080/foo"
+                     {:x 3})))
+
+  (is (= "http://arlonet.com:8080/foo?x=3&y=4"
+         (encode-url "http://arlonet.com:8080/foo"
+                     {:x 3 :y 4})))
+
+  (is (= "http://arlonet.com:8080/foo?x=3"
+         (encode-url "http://arlonet.com:8080/foo"
+                     {:x 3 :y nil})))
+
+  (is (= "http://arlonet.com:8080/foo?x=3%3D4"
+         (encode-url "http://arlonet.com:8080/foo"
+                     {:x "3=4"}))))

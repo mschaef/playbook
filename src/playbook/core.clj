@@ -275,7 +275,7 @@
   (let [query-string (clojure.string/join
                       "&" (map (fn [[param val]]
                                  (str (name param) "=" (java.net.URLEncoder/encode (str val))))
-                               query-params))]
+                               (remove #(nil? (second %)) query-params)))]
     (if (> (.length query-string) 0)
       (str url "?" query-string)
       url)))
