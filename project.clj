@@ -37,7 +37,7 @@
                  [com.draines/postal "2.0.5"]
                  ;; Only for playbook.db: applications with a database
                  ;; list sql-file themselves.
-                 [com.mschaef/sql-file "0.6.2" :scope "provided"]
+                 [com.mschaef/sql-file "0.6.3" :scope "provided"]
                  [it.sauronsoftware.cron4j/cron4j "2.2.5"]]
 
   :cljfmt {:load-config-file? true}

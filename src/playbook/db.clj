@@ -33,6 +33,14 @@
 
   [:db :subname] - The database name; defaults to [:app :name]. The
      db.subname system property takes precedence over both.
+  [:db :pool-size] - The most connections the pool keeps open
+     (default 4, sql-file's default). Size it for the web server's
+     request threads plus the scheduled jobs that can run at once.
+  [:db :connection-timeout-sec] - How long to wait for a free
+     connection before failing (default 30, HikariCP's default). A
+     short timeout makes requests fail quickly, rather than queue,
+     while the database is blocked (e.g. by the backup's CHECKPOINT
+     DEFRAG).
   [:db :enable-query-cache] - Whether the query cache is on.
   [:db :backup-path] - Directory for scheduled backups (the :db-backup
      job); with none, there are no backups."
@@ -47,10 +55,14 @@
 ;;; The database
 
 (defn- db-conn-spec [schemas]
-  {:name (or (config/property "db.subname")
-             (config/cval-or [:db :subname] (config/cval :app :name)))
-   :schema-path ["sql/"]
-   :schemas schemas})
+  (let [pool-size (config/cval-or [:db :pool-size] nil)
+        connection-timeout-sec (config/cval-or [:db :connection-timeout-sec] nil)]
+    (cond-> {:name (or (config/property "db.subname")
+                       (config/cval-or [:db :subname] (config/cval :app :name)))
+             :schema-path ["sql/"]
+             :schemas schemas}
+      pool-size (assoc :pool-size pool-size)
+      connection-timeout-sec (assoc :pool {:connection-timeout (* 1000 connection-timeout-sec)}))))
 
 (defn call-with-database
   "Open the application's database (as a connection pool), installing
