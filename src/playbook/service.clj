@@ -22,8 +22,7 @@
 (ns playbook.service
   "Running an application as a service: its scheduled jobs, and the
   body of code that is the application itself."
-  (:require [taoensso.timbre :as log]
-            [playbook.scheduler :as scheduler]))
+  (:require [playbook.scheduler :as scheduler]))
 
 (defn call-with-service
   "Start the scheduler with the given jobs, then call f, returning its
