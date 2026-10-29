@@ -13,7 +13,15 @@ web-facing applications build on ectcommon, which builds on this. General functi
   configuration files in a standard and configurable way.
 * Easily set up a [`timber`](https://github.com/ptaoussanis/timbre)
   logger with some nice defaults.
-* Run scheduled jobs (`playbook.scheduler`).
+* Run scheduled jobs (`playbook.scheduler`), and run an application
+  as a service with its jobs (`playbook.service`).
+* Open an embedded [sql-file](https://github.com/mschaef/sql-file)
+  database from configuration, with a shared query cache, database
+  connections for scheduled jobs, and scheduled backups
+  (`playbook.db`). This needs sql-file, which playbook doesn't bring
+  with it: an application with a database lists
+  `com.mschaef/sql-file` among its own dependencies, and one without
+  needs nothing extra.
 * Render Markdown templates with `{{variables}}` (`playbook.template`).
 * Send e-mail from a background queue (`playbook.mail`).
 * Provide a set of basic utility functions for common parsing and
