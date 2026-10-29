@@ -72,11 +72,13 @@
       (FAIL "Cannot find configuration value at path: " keys)
       val)))
 
-(defn wrap-config [app]
-  (let [config *config*]
-    (fn [req]
-      (with-config config
-        (app req)))))
+(defn cval-or
+  "Look up the configuration value at the path ks, as cval does, but
+  return default instead of failing when there is none."
+  [ks default]
+  (when (not *config*)
+    (FAIL "No configuration loaded."))
+  (get-in *config* ks default))
 
 (defmacro with-extended-config [additional-config & body]
   `(with-config (deep-merge (cval) ~additional-config)

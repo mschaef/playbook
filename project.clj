@@ -21,7 +21,7 @@
 ;;
 ;; You must not remove this notice, or any other, from this software.
 
-(defproject com.mschaef/playbook "0.1.11-SNAPSHOT"
+(defproject com.mschaef/playbook "0.2.0-SNAPSHOT"
   :description "A standard set of tools for small-scale Clojure applications."
 
   :license {:name "The Apache Software License, Version 2.0"
@@ -33,7 +33,8 @@
                  [com.fzakaria/slf4j-timbre "0.4.1"]
                  [cprop "0.1.20"]
                  [org.clojure/data.json "2.5.1"]
-                 [jstrutz/hashids "1.0.1"]
+                 [markdown-clj "1.12.3"]
+                 [com.draines/postal "2.0.5"]
                  [it.sauronsoftware.cron4j/cron4j "2.2.5"]]
 
   :cljfmt {:load-config-file? true}

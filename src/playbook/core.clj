@@ -178,18 +178,6 @@
      (boolean (truthy-strings (.toLowerCase (.trim str))))
      default-value)))
 
-;;; URI Parsing
-
-(defn uri-path? [uri]
-  "Returns only the path of the URI, if it is a parsable URI and false
-  otherwise."
-  (aand (parsable-string? uri)
-        (try
-          (.getPath (java.net.URI. it))
-          (catch java.net.URISyntaxException ex
-            (log/error "Invalid URI" uri)
-            false))))
-
 ;;; Date utilities
 
 (defn current-time []
@@ -268,14 +256,3 @@
 
 (defn edn-slurp [filename]
   (edn/read-string (slurp filename)))
-
-;;; URL Encoding
-
-(defn encode-url [url query-params]
-  (let [query-string (clojure.string/join
-                      "&" (map (fn [[param val]]
-                                 (str (name param) "=" (java.net.URLEncoder/encode (str val))))
-                               (remove #(nil? (second %)) query-params)))]
-    (if (> (.length query-string) 0)
-      (str url "?" query-string)
-      url)))

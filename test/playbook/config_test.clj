@@ -34,3 +34,12 @@
       (is (thrown-with-msg? RuntimeException
                             #"Cannot find configuration value at path: \(:missing-value\)"
                             (cval :missing-value))))))
+
+(deftest cval-or-lookup
+  (with-config {:point {:x 3 :y 4}}
+    (testing "Configuration value lookup with a default"
+      (is (= 3 (cval-or [:point :x] :default))))
+
+    (testing "Configuration value lookup of missing key with a default"
+      (is (= :default (cval-or [:point :z] :default)))
+      (is (= :default (cval-or [:missing-value] :default))))))
